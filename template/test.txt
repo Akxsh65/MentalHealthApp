@@ -1,0 +1,1 @@
+Built in theme for the project, for further customization for our needs.
