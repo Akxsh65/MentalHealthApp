@@ -1,0 +1,3 @@
+[submodule "frontend/material-kit-react"]
+	path = frontend/material-kit-react
+	url = https://github.com/creativetimofficial/material-kit-react.git
