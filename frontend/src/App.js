@@ -19,6 +19,7 @@ import ClinicianDashboard from "./pages/ClinicianDashboard";
 // Components
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -34,12 +35,19 @@ function App() {
           <Route path="/journal" element={<Journal />} />
           <Route path="/resources" element={<Resources />} />
           <Route path="/chat" element={<Chatbot />} />
-          <Route path="/reports" element={<Reports />} />
           <Route path="/trusted-contacts" element={<TrustedContact />} />
+          <Route path="/reports" element={<Reports />} />
 
           {/* Clinician Routes */}
           <Route path="/clinician/login" element={<ClinicianLogin />} />
-          <Route path="/clinician/dashboard" element={<ClinicianDashboard />} />
+          <Route
+            path="/clinician/dashboard"
+            element={
+              <ProtectedRoute>
+                <ClinicianDashboard />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
         <Footer />
       </Router>
