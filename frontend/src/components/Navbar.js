@@ -11,72 +11,55 @@ import {
 
 function Navbar() {
   return (
-    <AppBar position="static">
-      <Container>
+    <AppBar
+      position="fixed"
+      elevation={3}
+      sx={{
+        borderRadius: 2,
+        m: "10px",
+        width: "calc(100% - 20px)",
+        bgcolor: "background.paper",
+
+      }}
+    >
+      <Container disableGutters>
         <Toolbar disableGutters>
           <Typography
-            variant="h6"
+            variant="h5"
             component={RouterLink}
             to="/"
             sx={{
               flexGrow: 1,
+              fontSize: "1.5rem",
               textDecoration: "none",
-              color: "inherit",
+              color: "#00372b",
+              fontWeight: 700,
+              letterSpacing: "0.05em",
             }}
           >
-            Mental Health App
+            MindfulMe
           </Typography>
+
           <Box sx={{ display: "flex", gap: 2 }}>
-            <Button
-              color="inherit"
-              component={RouterLink}
-              to="/mood-tracker"
-            >
-              Mood Tracker
-            </Button>
-            <Button
-              color="inherit"
-              component={RouterLink}
-              to="/meditation"
-            >
-              Meditation
-            </Button>
-            <Button
-              color="inherit"
-              component={RouterLink}
-              to="/journal"
-            >
-              Journal
-            </Button>
-            <Button
-              color="inherit"
-              component={RouterLink}
-              to="/chat"
-            >
-              Chat Support
-            </Button>
-            <Button
-              color="inherit"
-              component={RouterLink}
-              to="/reports"
-            >
-              Reports
-            </Button>
-            <Button
-              color="inherit"
-              component={RouterLink}
-              to="/trusted-contacts"
-            >
-              Trusted Contacts
-            </Button>
-            <Button
-              color="inherit"
-              component={RouterLink}
-              to="/clinician/login"
-              sx={{ ml: 2 }}
-            >
-              Clinician Login
-            </Button>
+            {[
+              { label: "Mood Tracker", to: "/mood-tracker" },
+              { label: "Meditation", to: "/meditation" },
+              { label: "Journal", to: "/journal" },
+              { label: "Chat Support", to: "/chat" },
+              { label: "Reports", to: "/reports" },
+              { label: "Trusted Contacts", to: "/trusted-contacts" },
+              { label: "Clinician Login", to: "/clinician/login", ml: 2 },
+            ].map(({ label, to, ml = 0 }) => (
+              <Button
+                key={label}
+                color="inherit"
+                component={RouterLink}
+                to={to}
+                sx={{ color: "#00372b", ml }}
+              >
+                {label}
+              </Button>
+            ))}
           </Box>
         </Toolbar>
       </Container>
@@ -84,4 +67,4 @@ function Navbar() {
   );
 }
 
-export default Navbar; 
+export default Navbar;
