@@ -64,7 +64,7 @@ function Reports() {
 
   return (
     <Container>
-      <Typography variant="h2" color="primary" gutterBottom>
+      <Typography variant="h2" color="secondary" gutterBottom>
         Reports
       </Typography>
 

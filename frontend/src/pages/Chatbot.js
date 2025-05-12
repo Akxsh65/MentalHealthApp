@@ -44,7 +44,7 @@ function Chatbot() {
 
   return (
     <Container>
-      <Typography variant="h2" color="primary" gutterBottom>
+      <Typography variant="h2" color="secondary" gutterBottom>
         Chat Support
       </Typography>
 

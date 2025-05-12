@@ -75,7 +75,7 @@ function MoodTracker() {
 
   return (
     <Container>
-      <Typography variant="h2" color="primary" gutterBottom>
+      <Typography variant="h2" color="secondary" gutterBottom>
         Mood Tracker
       </Typography>
 
@@ -92,7 +92,10 @@ function MoodTracker() {
                     key={mood.value}
                     color={selectedMood?.value === mood.value ? "primary" : "default"}
                     onClick={() => handleMoodSelect(mood)}
-                    sx={{ fontSize: "2rem" }}
+                    sx={{
+                      fontSize: "2rem",
+                      color: selectedMood?.value === mood.value ? "primary.main" : "inherit", // Set icon color to primary if selected
+                    }}
                   >
                     {mood.icon}
                   </IconButton>
@@ -106,7 +109,21 @@ function MoodTracker() {
                 placeholder="Add a note about your mood..."
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-                sx={{ mb: 2 }}
+                sx={{
+                  mb: 2,
+                  backgroundColor: "secondary.main", // Apply secondary color to background
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "primary.main", // Border color as primary color
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "primary.main", // Border color on hover
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "primary.main", // Border color when focused
+                    },
+                  },
+                }}
               />
               <Button
                 variant="contained"
@@ -124,7 +141,7 @@ function MoodTracker() {
               <Typography variant="h5" gutterBottom>
                 Mood History
               </Typography>
-              <Box sx={{ height: 300 }}>
+              <Box sx={{ height: 300, backgroundColor: "secondary" }}> {/* Set background to secondary color */}
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={moodData}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -134,7 +151,8 @@ function MoodTracker() {
                     <Line
                       type="monotone"
                       dataKey="value"
-                      stroke="#8884d8"
+                      stroke="primary.main" // Set line color to primary color
+                      dot={{ fill: "primary.main" }}
                       activeDot={{ r: 8 }}
                     />
                   </LineChart>
@@ -189,4 +207,4 @@ function MoodTracker() {
   );
 }
 
-export default MoodTracker; 
+export default MoodTracker;
