@@ -120,7 +120,7 @@ mental-health-chatbot/
 ├── requirements.txt  # Python dependencies
 └── README.md
 ```
-
+run the main.py using the command->uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ---
 
 ## ⚠️ Disclaimer
