@@ -47,7 +47,7 @@ function Navbar() {
               { label: "Journal", to: "/journal" },
               { label: "ChatBot", to: "/chat" },
               { label: "Reports", to: "/reports" },
-              { label: "Trusted Contacts", to: "/trusted-contacts" },
+              { label: "Critical Action Plan", to: "/critical-action-plan" },
               { label: "Clinician Login", to: "/clinician/login", ml: 2 },
             ].map(({ label, to, ml = 0 }) => (
               <Button
