@@ -45,7 +45,7 @@ function Navbar() {
               { label: "Mood Tracker", to: "/mood-tracker" },
               { label: "Meditation", to: "/meditation" },
               { label: "Journal", to: "/journal" },
-              { label: "Chat Support", to: "/chat" },
+              { label: "ChatBot", to: "/chat" },
               { label: "Reports", to: "/reports" },
               { label: "Trusted Contacts", to: "/trusted-contacts" },
               { label: "Clinician Login", to: "/clinician/login", ml: 2 },
