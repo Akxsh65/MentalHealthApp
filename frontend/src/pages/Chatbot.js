@@ -5,10 +5,8 @@ import {
   Card,
   CardContent,
   Typography,
-  Box,
   TextField,
   IconButton,
-  Paper,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 
@@ -23,10 +21,7 @@ function Chatbot() {
   useEffect(() => {
     connectWebSocket();
     return () => {
-      if (
-        websocketRef.current &&
-        websocketRef.current.readyState === WebSocket.OPEN
-      ) {
+      if (websocketRef.current?.readyState === WebSocket.OPEN) {
         websocketRef.current.close();
       }
     };
@@ -50,7 +45,6 @@ function Chatbot() {
     ws.onopen = () => {
       console.log("WebSocket is open!");
       setIsConnected(true);
-
       const config = {
         type: "config",
         config: {
@@ -63,25 +57,12 @@ function Chatbot() {
             "Maintain a calm, kind, and supportive tone in every message.",
         },
       };
-
       ws.send(JSON.stringify(config));
-
-      if (messages.length === 0) {
-        setMessages([
-          {
-            text: "I'm here to listen and support you. How are you feeling today?",
-            sender: "bot",
-            timestamp: new Date().toISOString(),
-          },
-        ]);
-      }
     };
 
     ws.onmessage = (event) => {
       try {
         const response = JSON.parse(event.data);
-        console.log("Received message:", response);
-
         if (response.type === "text" && response.text) {
           setMessages((prev) => [
             ...prev,
@@ -92,18 +73,16 @@ function Chatbot() {
             },
           ]);
         } else if (response.type === "error") {
-          console.error("Error from server:", response.message);
+          console.error("Server error:", response.message);
         }
       } catch (error) {
-        console.error("Error parsing WebSocket message:", error);
+        console.error("WebSocket message parse error:", error);
       }
     };
 
-    ws.onclose = (event) => {
-      console.log("WebSocket connection closed:", event);
+    ws.onclose = () => {
       setIsConnected(false);
       setTimeout(() => {
-        console.log("Attempting to reconnect...");
         connectWebSocket();
       }, 3000);
     };
@@ -123,19 +102,9 @@ function Chatbot() {
 
       setMessages((prev) => [...prev, userMessage]);
 
-      const message = {
-        type: "text",
-        data: input,
-      };
-
-      if (
-        websocketRef.current &&
-        websocketRef.current.readyState === WebSocket.OPEN
-      ) {
-        websocketRef.current.send(JSON.stringify(message));
-      } else {
-        console.error("WebSocket is not open");
-      }
+      websocketRef.current?.send(
+        JSON.stringify({ type: "text", data: input })
+      );
 
       setInput("");
     }
@@ -151,53 +120,84 @@ function Chatbot() {
   return (
     <Container>
       <Typography variant="h2" color="secondary" gutterBottom>
-        Chat Support
+        ChatBot
       </Typography>
 
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Card>
-            <CardContent>
-              <Box
+          <Card sx={{ backgroundColor: "transparent", boxShadow: "none" }}>
+            <CardContent
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                padding: 0,
+                backgroundColor: "transparent",
+              }}
+            >
+              <div
                 ref={chatBoxRef}
-                sx={{
-                  height: "400px",
-                  overflowY: "auto",
-                  mb: 2,
-                  p: 2,
-                  backgroundColor: "#f5f5f5",
-                  borderRadius: 1,
+                style={{
+                  height: "70vh",
+                  overflowY: "auto", // Make it scrollable when content overflows
+                  padding: "16px",
+                  borderRadius: "8px",
+                  backgroundColor: "rgba(255, 255, 255, 0.1)", // Frosted glass background
+                  backdropFilter: "blur(10px)", // Frosted glass effect
+                  WebkitBackdropFilter: "blur(10px)", // Safari support
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
                 }}
               >
                 {messages.map((message, index) => (
-                  <Box
+                  <div
                     key={index}
-                    sx={{
+                    style={{
                       display: "flex",
                       justifyContent:
                         message.sender === "user" ? "flex-end" : "flex-start",
-                      mb: 2,
+                      marginBottom: "20px",
                     }}
                   >
-                    <Paper
-                      elevation={1}
-                      sx={{
-                        p: 2,
+                    <div
+                      style={{
+                        padding: "12px",
                         maxWidth: "70%",
-                        backgroundColor:
-                          message.sender === "user" ? "#e3f2fd" : "#fff",
+                        borderRadius: "8px",
+                        backgroundColor: message.sender === "user" ? "transparent" : "#00372b",
+                        color: "#e2f3e2",
+                        boxShadow: message.sender === "user" ? "none" :"0 1px 3px rgba(0,0,0,0.1)"
                       }}
                     >
-                      <Typography variant="body1">{message.text}</Typography>
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography variant="body1" style={{ whiteSpace: "pre-wrap" }}>
+                        {message.text}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        style={{
+                          display: "block",
+                          marginTop: "4px",
+                          textAlign: "right",
+                          color: "#e2f3e2",
+                        }}
+                      >
                         {new Date(message.timestamp).toLocaleTimeString()}
                       </Typography>
-                    </Paper>
-                  </Box>
+                    </div>
+                  </div>
                 ))}
                 <div ref={messagesEndRef} />
-              </Box>
-              <Box sx={{ display: "flex", gap: 1 }}>
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  gap: "8px",
+                  marginTop: "16px",
+                  borderTop: "1px solid rgba(255, 255, 255, 0.3)",
+                  paddingTop: "8px",
+                }}
+              >
                 <TextField
                   fullWidth
                   variant="outlined"
@@ -207,16 +207,28 @@ function Chatbot() {
                   onKeyPress={handleKeyPress}
                   multiline
                   maxRows={4}
+                  sx={{
+                    flex: 1,
+                    ".MuiOutlinedInput-root": {
+                      borderRadius: 2,
+                      color: "#ffffff",
+                      backgroundColor: "transparent",
+                      borderColor: "rgba(255, 255, 255, 0.3)",
+                    },
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none",
+                    },
+                  }}
                 />
                 <IconButton
                   color="primary"
                   onClick={handleSend}
                   disabled={!input.trim() || !isConnected}
-                  sx={{ alignSelf: "flex-end" }}
+                  sx={{ alignSelf: "flex-end", color: "#ffffff" }}
                 >
                   <SendIcon />
                 </IconButton>
-              </Box>
+              </div>
             </CardContent>
           </Card>
         </Grid>
