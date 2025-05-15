@@ -17,6 +17,7 @@ import TrustedContact from "./pages/TrustedContact";
 import ClinicianLogin from "./pages/ClinicianLogin";
 import ClinicianDashboard from "./pages/ClinicianDashboard";
 import Questionnaire from "./pages/questionairre";
+import CriticalActionPlan from "./pages/CriticalActionPlan;
 
 // Components
 import Navbar from "./components/Navbar";
