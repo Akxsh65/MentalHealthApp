@@ -1,5 +1,6 @@
 import React from "react";
 import { Container, Grid, Box, Typography } from "@mui/material";
+import { Link } from "react-router-dom";
 
 function Footer() {
   return (
@@ -19,13 +20,13 @@ function Footer() {
               Quick Links
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              • Mood Tracker
+              • <Link to="/mood-tracker" style={{ textDecoration: "none", color: "inherit" }}>MoodTracker</Link>
               <br />
-              • Meditation
+              • <Link to="/meditation" style={{ textDecoration: "none", color: "inherit" }}>Meditation</Link>
               <br />
-              • Journal
+             • <Link to="/journal" style={{ textDecoration: "none", color: "inherit" }}>Journal</Link>
               <br />
-              • Resources
+              • <Link to="/resources" style={{ textDecoration: "none", color: "inherit" }}>Resources</Link>
             </Typography>
           </Grid>
           <Grid item xs={12} md={4}>
@@ -49,4 +50,4 @@ function Footer() {
   );
 }
 
-export default Footer; 
+export default Footer;
