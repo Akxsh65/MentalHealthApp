@@ -13,10 +13,9 @@ import Journal from "./pages/Journal";
 import Resources from "./pages/Resources";
 import Chatbot from "./pages/Chatbot";
 import Reports from "./pages/Reports";
-import CriticalActionPlan from "./pages/CriticalActionPlan";
+import TrustedContact from "./pages/TrustedContact";
 import ClinicianLogin from "./pages/ClinicianLogin";
 import ClinicianDashboard from "./pages/ClinicianDashboard";
-
 
 // Components
 import Navbar from "./components/Navbar";
@@ -39,7 +38,7 @@ function App() {
             <Route path="/journal" element={<Journal />} />
             <Route path="/resources" element={<Resources />} />
             <Route path="/chat" element={<Chatbot />} />
-            <Route path="/critical-action-plan" element={<CriticalActionPlan />} />
+            <Route path="/trusted-contacts" element={<TrustedContact />} />
             <Route path="/reports" element={<Reports />} />
 
             {/* Clinician Routes */}
