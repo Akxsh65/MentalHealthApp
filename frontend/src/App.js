@@ -16,6 +16,7 @@ import Reports from "./pages/Reports";
 import TrustedContact from "./pages/TrustedContact";
 import ClinicianLogin from "./pages/ClinicianLogin";
 import ClinicianDashboard from "./pages/ClinicianDashboard";
+import Questionnaire from "./pages/questionairre";
 
 // Components
 import Navbar from "./components/Navbar";
@@ -29,7 +30,7 @@ function App() {
       <CssBaseline />
       <Router>
         <Navbar />
-        <Box sx = {{pt: '80px'}}>
+        <Box sx={{ pt: '80px' }}>
           <Routes>
             {/* User Routes */}
             <Route path="/" element={<LandingPage />} />
@@ -40,6 +41,8 @@ function App() {
             <Route path="/chat" element={<Chatbot />} />
             <Route path="/trusted-contacts" element={<TrustedContact />} />
             <Route path="/reports" element={<Reports />} />
+            {/* Questionnaire Route */}
+            <Route path="/questionnaire" element={<Questionnaire />} />
 
             {/* Clinician Routes */}
             <Route path="/clinician/login" element={<ClinicianLogin />} />
