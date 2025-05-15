@@ -49,7 +49,7 @@ function Navbar() {
               { label: "Reports", to: "/reports" },
               { label: "Critical Action Plan", to: "/critical-action-plan" },
               { label: "Clinician Login", to: "/clinician/login", ml: 2 },
-              { label: "Questionnaire", to: "/questionnaire" }
+              { label: "Questionnaire", to: "/Questionnaire" }
             ].map(({ label, to, ml = 0 }) => (
               <Button
                 key={label}

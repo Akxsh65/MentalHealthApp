@@ -58,7 +58,7 @@ function getFeedback(score) {
     return "Low well-being. It might help to talk to someone you trust or a mental health professional.";
 }
 
-export default function WHO5Questionnaire() {
+function Questionnaire() {
     const [answers, setAnswers] = useState({});
     const [submitted, setSubmitted] = useState(false);
 
@@ -402,3 +402,4 @@ export default function WHO5Questionnaire() {
         </Box>
     );
 }
+export default Questionnaire;
