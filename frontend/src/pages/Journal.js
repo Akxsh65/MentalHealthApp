@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useTheme } from "@mui/material/styles"; 
+import React, { useState, useRef, useEffect } from "react";
 import {
   Container,
   Grid,
@@ -14,177 +13,165 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-  Paper,
+  LinearProgress,
+  Chip,
+  Tooltip,
 } from "@mui/material";
-import { Mic, Stop, Delete } from "@mui/icons-material";
-import SendIcon from "@mui/icons-material/Send";
+import { Mic, Stop, Delete, EmojiEvents } from "@mui/icons-material";
+
+// Motivational quotes
+const quotes = [
+  "Every day is a fresh start.",
+  "Small steps every day.",
+  "Your feelings are valid.",
+  "Progress, not perfection.",
+  "You are stronger than you think.",
+];
+
+function getToday() {
+  const d = new Date();
+  return d.toISOString().split("T")[0];
+}
 
 function Journal() {
-  const [entries, setEntries] = useState([]);
+  const [entries, setEntries] = useState(() => {
+    const saved = localStorage.getItem("journalEntries");
+    return saved ? JSON.parse(saved) : [];
+  });
   const [currentEntry, setCurrentEntry] = useState("");
   const [isRecording, setIsRecording] = useState(false);
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
-  const [isConnected, setIsConnected] = useState(false);
-  const websocketRef = useRef(null);
-  const messagesEndRef = useRef(null);
-  const chatBoxRef = useRef(null);
+  const [streak, setStreak] = useState(() => {
+    const saved = localStorage.getItem("journalStreak");
+    return saved ? JSON.parse(saved) : 0;
+  });
+  const [lastEntryDate, setLastEntryDate] = useState(() => {
+    return localStorage.getItem("journalLastDate") || "";
+  });
+  const [quote, setQuote] = useState("");
+  const recognitionRef = useRef(null);
+
+  // Word count goal
+  const WORD_GOAL = 50;
+  const wordCount = currentEntry.trim().split(/\s+/).filter(Boolean).length;
+
+  // Badges
+  const badges = [];
+  if (entries.length >= 1) badges.push("First Entry");
+  if (streak >= 3) badges.push("3-Day Streak");
+  if (streak >= 7) badges.push("7-Day Streak");
+  if (entries.length >= 10) badges.push("10 Entries");
 
   useEffect(() => {
-    connectWebSocket();
-    return () => {
-      if (websocketRef.current?.readyState === WebSocket.OPEN) {
-        websocketRef.current.close();
-      }
-    };
+    setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
   }, []);
 
   useEffect(() => {
-    const chatBox = chatBoxRef.current;
-    if (chatBox) {
-      const isNearBottom =
-        chatBox.scrollHeight - chatBox.scrollTop - chatBox.clientHeight < 100;
-      if (isNearBottom) {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-      }
-    }
-  }, [messages]);
+    localStorage.setItem("journalEntries", JSON.stringify(entries));
+  }, [entries]);
 
-  const connectWebSocket = () => {
-    const ws = new WebSocket("ws://localhost:8000/ws/webclient");
-    websocketRef.current = ws;
-
-    ws.onopen = () => {
-      console.log("WebSocket is open!");
-      setIsConnected(true);
-
-      const config = {
-        type: "config",
-        config: {
-          systemPrompt:
-            "You are a compassionate and emotionally intelligent mental health assistant. " +
-            "Your goal is to help users talk through their feelings, understand their emotions, " +
-            "and feel heard without judgment. Ask open-ended and gentle follow-up questions when appropriate, " +
-            "encourage self-reflection, and validate the user's experience. Never diagnose or offer medical advice. " +
-            "If a user expresses signs of crisis or self-harm, recommend speaking to a trusted person or contacting a local helpline. " +
-            "Maintain a calm, kind, and supportive tone in every message.",
-        },
-      };
-
-      ws.send(JSON.stringify(config));
-    };
-
-    ws.onmessage = (event) => {
-      try {
-        const response = JSON.parse(event.data);
-        if (response.type === "text" && response.text) {
-          setMessages((prev) => [
-            ...prev,
-            {
-              text: response.text,
-              sender: "bot",
-              timestamp: new Date().toISOString(),
-            },
-          ]);
-        } else if (response.type === "error") {
-          console.error("Server error:", response.message);
-        }
-      } catch (error) {
-        console.error("WebSocket message parse error:", error);
-      }
-    };
-
-    ws.onclose = () => {
-      setIsConnected(false);
-      setTimeout(() => {
-        connectWebSocket();
-      }, 3000);
-    };
-
-    ws.onerror = (error) => {
-      console.error("WebSocket error:", error);
-    };
-  };
+  useEffect(() => {
+    localStorage.setItem("journalStreak", JSON.stringify(streak));
+    localStorage.setItem("journalLastDate", lastEntryDate);
+  }, [streak, lastEntryDate]);
 
   const handleSaveEntry = () => {
     if (currentEntry.trim()) {
+      const today = getToday();
       const newEntry = {
         id: Date.now(),
         content: currentEntry,
         date: new Date().toLocaleDateString(),
+        isoDate: today,
       };
       setEntries([newEntry, ...entries]);
+      setCurrentEntry("");
 
-      // Simulate user message
-      const userMessage = {
-        text: currentEntry,
-        sender: "user",
-        timestamp: new Date().toISOString(),
-      };
-      setMessages((prev) => [...prev, userMessage]);
-
-      // Send to WebSocket
-      if (websocketRef.current?.readyState === WebSocket.OPEN) {
-        websocketRef.current.send(JSON.stringify({
-          type: "text",
-          data: currentEntry,
-        }));
+      // Streak logic
+      if (lastEntryDate === "") {
+        setStreak(1);
       } else {
-        console.error("WebSocket is not open");
+        const prev = new Date(lastEntryDate);
+        const curr = new Date(today);
+        const diff = (curr - prev) / (1000 * 60 * 60 * 24);
+        if (diff === 1) setStreak(streak + 1);
+        else if (diff > 1) setStreak(1);
+        // If same day, streak unchanged
       }
-
-      setCurrentEntry(""); // Clear entry
+      setLastEntryDate(today);
     }
   };
-
 
   const handleDeleteEntry = (id) => {
     setEntries(entries.filter((entry) => entry.id !== id));
   };
 
-  const handleSend = () => {
-    if (input.trim() && isConnected) {
-      const userMessage = {
-        text: input,
-        sender: "user",
-        timestamp: new Date().toISOString(),
+  const toggleRecording = () => {
+    if (!isRecording) {
+      if (!("webkitSpeechRecognition" in window || "SpeechRecognition" in window)) {
+        alert("Speech recognition not supported in this browser.");
+        return;
+      }
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.lang = "en-US";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setCurrentEntry((prev) => prev ? prev + " " + transcript : transcript);
+      };
+      recognition.onerror = (event) => {
+        alert("Speech recognition error: " + event.error);
+        setIsRecording(false);
+      };
+      recognition.onend = () => {
+        setIsRecording(false);
       };
 
-      setMessages((prev) => [...prev, userMessage]);
-
-      websocketRef.current?.send(
-        JSON.stringify({ type: "text", data: input })
-      );
-
-      setInput("");
+      recognitionRef.current = recognition;
+      recognition.start();
+      setIsRecording(true);
+    } else {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      setIsRecording(false);
     }
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
-
-  const toggleRecording = () => {
-    setIsRecording((prev) => !prev);
-    console.log(isRecording ? "Stopped recording..." : "Started recording...");
   };
 
   return (
     <Container>
+      <Typography variant="h2" color="secondary" gutterBottom>
+        Journal
+      </Typography>
+
+      <Box sx={{ mb: 2 }}>
+        <Typography variant="subtitle1" color="primary">
+          {quote}
+        </Typography>
+      </Box>
+
       <Grid container spacing={3}>
-        {/* Journal Entry Section */}
-        <Grid item xs={12} md={6}>
-          <Typography variant="h2" color="secondary" gutterBottom>
-            Journal
-          </Typography>
+        <Grid item xs={12}>
           <Card>
             <CardContent>
-              <Typography variant="h5" gutterBottom>
-                New Entry
-              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 1, gap: 2 }}>
+                <Typography variant="h5" gutterBottom>
+                  New Entry
+                </Typography>
+                {badges.map((badge) => (
+                  <Tooltip key={badge} title={badge}>
+                    <Chip
+                      icon={<EmojiEvents color="warning" />}
+                      label={badge}
+                      color="warning"
+                      size="small"
+                      sx={{ ml: 1 }}
+                    />
+                  </Tooltip>
+                ))}
+              </Box>
               <TextField
                 fullWidth
                 multiline
@@ -195,8 +182,13 @@ function Journal() {
                 onChange={(e) => setCurrentEntry(e.target.value)}
                 sx={{ mb: 2 }}
               />
-              <Box sx={{ display: "flex", gap: 2 }}>
-                <Button variant="contained" color="primary" onClick={handleSaveEntry}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSaveEntry}
+                  disabled={!currentEntry.trim()}
+                >
                   Save Entry
                 </Button>
                 <IconButton
@@ -205,149 +197,65 @@ function Journal() {
                 >
                   {isRecording ? <Stop /> : <Mic />}
                 </IconButton>
+                <Typography variant="body2" sx={{ ml: 2 }}>
+                  Word count: {wordCount}/{WORD_GOAL}
+                </Typography>
               </Box>
+              <LinearProgress
+                variant="determinate"
+                value={Math.min((wordCount / WORD_GOAL) * 100, 100)}
+                sx={{ height: 8, borderRadius: 2, mb: 1 }}
+                color={wordCount >= WORD_GOAL ? "success" : "primary"}
+              />
+              <Typography variant="body2" color="text.secondary">
+                {wordCount >= WORD_GOAL
+                  ? "Great job! You've hit your daily word goal."
+                  : `Write ${WORD_GOAL - wordCount} more words to reach your goal.`}
+              </Typography>
             </CardContent>
           </Card>
+        </Grid>
 
-          <Card sx={{ mt: 3 }}>
+        <Grid item xs={12}>
+          <Card>
             <CardContent>
-              <Typography variant="h5" gutterBottom>
-                Previous Entries
-              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <Typography variant="h5" gutterBottom>
+                  Previous Entries
+                </Typography>
+                <Chip
+                  label={`Streak: ${streak} day${streak === 1 ? "" : "s"}`}
+                  color={streak >= 3 ? "success" : "primary"}
+                  size="small"
+                />
+              </Box>
               <List>
                 {entries.map((entry) => (
                   <ListItem key={entry.id} divider>
-                    <ListItemText primary={entry.content} secondary={entry.date} />
+                    <ListItemText
+                      primary={entry.content}
+                      secondary={entry.date}
+                    />
                     <ListItemSecondaryAction>
-                      <IconButton edge="end" onClick={() => handleDeleteEntry(entry.id)}>
+                      <IconButton
+                        edge="end"
+                        aria-label="delete"
+                        onClick={() => handleDeleteEntry(entry.id)}
+                      >
                         <Delete />
                       </IconButton>
                     </ListItemSecondaryAction>
                   </ListItem>
                 ))}
+                {entries.length === 0 && (
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+                    No entries yet. Start journaling today!
+                  </Typography>
+                )}
               </List>
             </CardContent>
           </Card>
         </Grid>
-
-        {/* Chatbot Section */}
-          <Grid item xs={12} md={6}>
-            <Typography variant="h2" color="secondary" gutterBottom>
-              Assistant
-            </Typography>
-            <Card sx={{
-              display: "flex",
-              flexDirection: "column",
-              height: "100%",
-              backgroundColor: "transparent",
-              boxShadow: "none",
-              borderRadius: "12px",  // Optional: Add a border radius if you want
-            }}>
-              <CardContent sx={{
-                flex: 1,
-                display: "flex",
-                flexDirection: "column",
-                padding: 0,  // Remove internal padding
-                backgroundColor: "transparent",  // Ensure CardContent itself is transparent
-              }}>
-                <div
-                  ref={chatBoxRef}
-                  style={{
-                    flex: 1,
-                    overflowY: "auto",
-                    padding: "16px",
-                    borderRadius: "8px",
-                    backgroundColor: "rgba(255, 255, 255, 0.1)", // Translucent background
-                    backdropFilter: "blur(10px)", // Frosted glass effect
-                    WebkitBackdropFilter: "blur(10px)", // Safari support
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  {messages.map((message, index) => (
-                    <div
-                      key={index}
-                      style={{
-                        display: "flex",
-                        justifyContent: message.sender === "user" ? "flex-end" : "flex-start",
-                        marginBottom: "8px",
-                      }}
-                    >
-                      <div
-                        style={{
-                          padding: "12px",
-                          maxWidth: "70%",
-                          borderRadius: "8px",
-                          backgroundColor: message.sender === "user" ? "transparent" : "#00372b",
-                          color: "#e2f3e2",
-                          boxShadow: message.sender === "user" ? "none" :"0 1px 3px rgba(0,0,0,0.1)"
-                        }}
-                      >
-                        <Typography variant="body1" style={{ whiteSpace: "pre-wrap" }}>
-                          {message.text}
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          style={{
-                            display: "block",
-                            marginTop: "4px",
-                            textAlign: "right",
-                            color: "#e2f3e2" // Or any other color you'd like
-                          }}
-                        >
-                          {new Date(message.timestamp).toLocaleTimeString()}
-                        </Typography>
-                      </div>
-                    </div>
-                  ))}
-                  <div ref={messagesEndRef} />
-                  
-                  {/* Input and send button section inside the transparent chat box */}
-                  <div style={{
-                    display: "flex",
-                    gap: "8px",
-                    marginTop: "16px",
-                    borderTop: "1px solid rgba(255, 255, 255, 0.3)", // Optional: Add a border between messages and input
-                    paddingTop: "8px",
-                  }}>
-                    <TextField
-                      fullWidth
-                      variant="outlined"
-                      
-                      placeholder="Type your message..."
-                      value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      multiline
-                      maxRows={4}
-                      sx={{
-                        flex: 1,
-                        ".MuiOutlinedInput-root": {
-                          borderRadius: 2,
-                          color: "#ffffff", // Text color
-                          backgroundColor: "transparent", // Ensure the input is transparent as well
-                          borderColor: "rgba(255, 255, 255, 0.3)", // Optional: Add a light border to the input
-                        },
-                        "& .MuiOutlinedInput-notchedOutline": {
-                          border: "none", // Remove the default border of the text field
-                        }
-                      }}
-                    />
-                    <IconButton
-                      color="primary"
-                      onClick={handleSend}
-                      disabled={!input.trim() || !isConnected}
-                      sx={{ alignSelf: "flex-end", color : "#ffffff" }} // Ensure the icon color is white
-                    >
-                      <SendIcon />
-                    </IconButton>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </Grid>
-
       </Grid>
     </Container>
   );
