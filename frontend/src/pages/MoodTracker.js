@@ -157,33 +157,23 @@ function MoodTracker() {
               </Typography>
               <Box sx={{ display: "flex", justifyContent: "center", gap: 3, my: 3 }}>
                 {moodEmojis.map((mood) => (
-                  <Fade in={true} key={mood.value}>
-                    <Box
-                      sx={{
-                        transform:
-                          selectedMood?.value === mood.value || animatingMood === mood.value
-                            ? "scale(1.3) rotate(-10deg)"
-                            : "scale(1)",
-                        transition: "transform 0.3s cubic-bezier(.68,-0.55,.27,1.55)",
-                        boxShadow:
-                          selectedMood?.value === mood.value
-                            ? "0 0 16px 4px #1976d2"
-                            : "none",
-                        borderRadius: "50%",
-                        bgcolor:
-                          selectedMood?.value === mood.value
-                            ? "primary.light"
-                            : "background.paper",
-                        p: 1,
-                        cursor: "pointer",
-                      }}
-                      onClick={() => handleMoodSelect(mood)}
-                    >
-                      <MuiTooltip title={mood.label} arrow>
-                        <span>{mood.icon}</span>
-                      </MuiTooltip>
-                    </Box>
-                  </Fade>
+                  <Box
+                    key={mood.value}
+                    sx={{
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      transition: "transform 0.4s ease-in-out",
+                      transform: selectedMood?.value === mood.value ? "scale(1.4)" : "scale(1)",
+                      p: 0,
+                    }}
+                    onClick={() => handleMoodSelect(mood)}
+                  >
+                    <MuiTooltip title={mood.label} arrow>
+                      <span>{mood.icon}</span>
+                    </MuiTooltip>
+                  </Box>
                 ))}
               </Box>
               <TextField
@@ -262,19 +252,26 @@ function MoodTracker() {
               <Typography variant="h5" gutterBottom>
                 Mood History
               </Typography>
-              <Box sx={{ height: 300, backgroundColor: "secondary.light", borderRadius: 2 }}>
+              <Box sx={{ height: 300, backgroundColor: "secondary", borderRadius: 2, p: 2 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={moodData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis domain={[0, 5]} />
-                    <Tooltip />
+                  <LineChart
+                    data={moodData}
+                    style={{ backgroundColor: "transparent" }} // ✅ make chart itself transparent
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.2)" />
+                    <XAxis dataKey="date" stroke="#00372b" />
+                    <YAxis domain={[0, 5]} stroke="#00372b" />
+                    <Tooltip
+                      contentStyle={{ backgroundColor: "transparent", border: "none" }}
+                      labelStyle={{ color: "#00372b" }}
+                      itemStyle={{ color: "#00372b" }}
+                    />
                     <Line
                       type="monotone"
                       dataKey="value"
-                      stroke="#1976d2"
-                      dot={{ fill: "#1976d2" }}
-                      activeDot={{ r: 8 }}
+                      stroke="#00372b" // Or better: use theme.palette.primary.main
+                      dot={{ fill: "#00372b" }}
+                      activeDot={{ r: 8, fill: "#00372b" }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
