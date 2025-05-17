@@ -1,11 +1,8 @@
 import React from "react";
-import { Container, Box, Typography, Paper, Button } from "@mui/material";
+import { Container, Box, Typography, Button } from "@mui/material";
 import { Link } from "react-router-dom";
-import { useTheme } from "@mui/material/styles";
 
 function LandingPage() {
-  const theme = useTheme();
-
   const features = [
     {
       title: "Mood Tracking",
@@ -30,6 +27,18 @@ function LandingPage() {
       description:
         "Get 24/7 support with our integrated chatbot for immediate mental health assistance.",
       image: "/chatbot_page.png",
+    },
+    {
+      title: "Critical Action Plan",
+      description:
+        "Create a personalized emergency reference list for when you feel overwhelmed or are spiraling.",
+      image: "/critical_action_plan_page.png",
+    },
+    {
+      title: "Well-being Questionnaire",
+      description:
+        "Answer guided questions to receive a well-being score and personalized recommendations.",
+      image: "/questionnaire_page.png",
     },
   ];
 
@@ -56,7 +65,7 @@ function LandingPage() {
         </Box>
       </Box>
 
-      {/* Feature Sections */}
+      {/* Feature Cards */}
       <Box sx={{ display: "flex", flexDirection: "column", gap: 5 }}>
         {features.map((feature) => (
           <Box
@@ -65,14 +74,22 @@ function LandingPage() {
               display: "flex",
               flexDirection: { xs: "column", md: "row" },
               alignItems: "stretch",
-              backgroundColor: theme.palette.background.paper,
+              backgroundColor: "#e2f3e2",
               borderRadius: 8,
               boxShadow: 3,
               overflow: "hidden",
             }}
           >
-            {/* Text Content */}
-            <Box sx={{ flex: 1, p: 4, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+            {/* Text */}
+            <Box
+              sx={{
+                flex: 1,
+                p: 4,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
               <Typography variant="h4" color="primary.main" gutterBottom>
                 {feature.title}
               </Typography>
@@ -81,7 +98,7 @@ function LandingPage() {
               </Typography>
             </Box>
 
-            {/* Image with Gradient Overlay */}
+            {/* Image */}
             <Box
               sx={{
                 flex: 1,
@@ -92,7 +109,6 @@ function LandingPage() {
                 height: "100%",
               }}
             >
-              {/* Image with Gradient Overlay and Border */}
               <Box
                 sx={{
                   flex: 1,
@@ -103,7 +119,6 @@ function LandingPage() {
                   overflow: "hidden",
                 }}
               >
-                {/* Image with border */}
                 <Box
                   sx={{
                     width: "100%",
@@ -125,7 +140,6 @@ function LandingPage() {
                       display: "block",
                     }}
                   />
-                  {/* Gradient overlay on top of image */}
                   <Box
                     sx={{
                       position: "absolute",
