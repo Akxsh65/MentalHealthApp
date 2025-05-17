@@ -245,7 +245,7 @@ function Questionnaire() {
                 <form onSubmit={handleGamifiedSubmit}>
                     <Card variant="outlined" sx={{
                         mb: 2,
-                        bgcolor: "#f5fafd",
+                        bgcolor: "#e2f3e2",
                         borderRadius: 3,
                         boxShadow: 2,
                         transition: "box-shadow 0.2s"
