@@ -144,7 +144,7 @@ function MoodTracker() {
 
   return (
     <Container>
-      <Typography variant="h2" color="secondary" gutterBottom align="center" sx={{ fontWeight: 700 }}>
+      <Typography variant="h2" color="secondary" gutterBottom align="left">
         Mood Tracker
       </Typography>
 

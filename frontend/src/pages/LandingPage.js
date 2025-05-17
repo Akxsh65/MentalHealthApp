@@ -1,32 +1,35 @@
 import React from "react";
-import { Container, Box, Typography, Paper, Button, Grid } from "@mui/material";
+import { Container, Box, Typography, Paper, Button } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 
 function LandingPage() {
-  const theme = useTheme(); // Use theme to access colors and styles
+  const theme = useTheme();
 
-  // Define features
   const features = [
     {
       title: "Mood Tracking",
       description:
         "Track your emotional patterns daily and gain insights into your mental well-being.",
+      image: "/mood_tracker_page.png",
     },
     {
       title: "Meditation",
       description:
         "Access guided meditations to help you manage stress, anxiety, and improve mindfulness.",
+      image: "/meditation_page.png",
     },
     {
       title: "Journal",
       description:
         "Write down your thoughts and feelings in a private, secure space.",
+      image: "/journal_page.png",
     },
     {
-      title: "Chat Support",
+      title: "ChatBot",
       description:
         "Get 24/7 support with our integrated chatbot for immediate mental health assistance.",
+      image: "/chatbot_page.png",
     },
   ];
 
@@ -53,25 +56,23 @@ function LandingPage() {
         </Box>
       </Box>
 
-      {/* Scrollable Feature Sections */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-        {features.map((feature, index) => (
+      {/* Feature Sections */}
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 5 }}>
+        {features.map((feature) => (
           <Box
             key={feature.title}
             sx={{
               display: "flex",
               flexDirection: { xs: "column", md: "row" },
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 4,
+              alignItems: "stretch",
               backgroundColor: theme.palette.background.paper,
-              borderRadius: 2,
+              borderRadius: 8,
               boxShadow: 3,
-              p: 4,
+              overflow: "hidden",
             }}
           >
-            {/* Description on Left */}
-            <Box sx={{ flex: 1 }}>
+            {/* Text Content */}
+            <Box sx={{ flex: 1, p: 4, display: "flex", flexDirection: "column", justifyContent: "center" }}>
               <Typography variant="h4" color="primary.main" gutterBottom>
                 {feature.title}
               </Typography>
@@ -80,29 +81,65 @@ function LandingPage() {
               </Typography>
             </Box>
 
-            {/* Card on Right */}
-            <Paper
-              elevation={4}
+            {/* Image with Gradient Overlay */}
+            <Box
               sx={{
                 flex: 1,
-                height: 200,
-                borderRadius: 4,
-                backgroundColor: theme.palette.secondary.light,
+                position: "relative",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                height: "100%",
               }}
             >
-              {/* Placeholder content */}
+              {/* Image with Gradient Overlay and Border */}
               <Box
                 sx={{
-                  height: "100%",
+                  flex: 1,
+                  position: "relative",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  color: theme.palette.text.secondary,
+                  overflow: "hidden",
                 }}
               >
-                [Image / Chart / Component Placeholder]
+                {/* Image with border */}
+                <Box
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                    overflow: "hidden",
+                    position: "relative",
+                    margin: "5px",
+                    borderBottomRightRadius: "28px",
+                    borderTopRightRadius: "28px",
+                  }}
+                >
+                  <img
+                    src={feature.image}
+                    alt={`${feature.title} Screenshot`}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      display: "block",
+                    }}
+                  />
+                  {/* Gradient overlay on top of image */}
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      background: `linear-gradient(to right, #e2f3e2 0%, transparent 50%)`,
+                      pointerEvents: "none",
+                    }}
+                  />
+                </Box>
               </Box>
-            </Paper>
+            </Box>
           </Box>
         ))}
       </Box>
