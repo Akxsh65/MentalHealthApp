@@ -48,7 +48,6 @@ function Navbar() {
               { label: "ChatBot", to: "/chat" },
               { label: "Reports", to: "/reports" },
               { label: "Critical Action Plan", to: "/critical-action-plan" },
-              { label: "Clinician Login", to: "/clinician/login", ml: 2 },
               { label: "Questionnaire", to: "/Questionnaire" }
             ].map(({ label, to, ml = 0 }) => (
               <Button
@@ -61,6 +60,40 @@ function Navbar() {
                 {label}
               </Button>
             ))}
+            
+            {/* Portal Buttons */}
+            <Box sx={{ display: "flex", gap: 1, ml: 2 }}>
+              <Button
+                color="primary"
+                variant="outlined"
+                component={RouterLink}
+                to="/patient-auth"
+                sx={{ 
+                  color: "#00372b", 
+                  borderColor: "#00372b",
+                  '&:hover': {
+                    borderColor: "#00372b",
+                    backgroundColor: "rgba(0, 55, 43, 0.04)"
+                  }
+                }}
+              >
+                Patient Portal
+              </Button>
+              <Button
+                color="primary"
+                variant="contained"
+                component={RouterLink}
+                to="/clinician/login"
+                sx={{ 
+                  backgroundColor: "#00372b",
+                  '&:hover': {
+                    backgroundColor: "#002a22"
+                  }
+                }}
+              >
+                Clinician Portal
+              </Button>
+            </Box>
           </Box>
         </Toolbar>
       </Container>

@@ -13,7 +13,7 @@ import {
   Tabs,
   Tab,
 } from "@mui/material";
-import { supabase } from "../config/supabaseClient";
+import apiService from "../services/api";
 
 function ClinicianLogin() {
   const navigate = useNavigate();
@@ -57,26 +57,20 @@ function ClinicianLogin() {
     setError(null);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: loginData.email,
-        password: loginData.password,
-      });
-
-      if (error) throw error;
-
-      if (data?.user) {
-        const { data: profile, error: profileError } = await supabase
-          .from("clinicians")
-          .select("*")
-          .eq("user_id", data.user.id)
-          .single();
-
-        if (profileError || !profile) {
-          throw new Error("Unauthorized: Not a registered clinician");
-        }
-
-        localStorage.setItem("clinician", JSON.stringify(profile));
+      // Use real API service
+      const response = await apiService.login(loginData.email, loginData.password);
+      
+      if (response.user_type === "clinician") {
+        // Store clinician info
+        localStorage.setItem("clinician", JSON.stringify({
+          id: response.user_id,
+          email: loginData.email,
+          user_type: "clinician"
+        }));
+        
         navigate("/clinician/dashboard");
+      } else {
+        throw new Error("This account is not registered as a clinician");
       }
     } catch (error) {
       setError(error.message);
@@ -91,62 +85,30 @@ function ClinicianLogin() {
     setError(null);
 
     try {
-      // First, sign up the user
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      // Use real API service
+      const userData = {
         email: registerData.email,
         password: registerData.password,
-      });
+        user_type: "clinician"
+      };
 
-      if (authError) throw authError;
+      const clinicianData = {
+        first_name: registerData.firstName,
+        last_name: registerData.lastName,
+        specialization: registerData.specialization
+      };
 
-      if (authData?.user) {
-        // Wait a moment for the user to be fully created
-        await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await apiService.registerClinician(userData, clinicianData);
+      
+      // Store clinician info
+      localStorage.setItem("clinician", JSON.stringify({
+        id: response.user_id,
+        email: registerData.email,
+        user_type: "clinician"
+      }));
 
-        // Sign in the user to get a fresh session
-        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-          email: registerData.email,
-          password: registerData.password,
-        });
-
-        if (signInError) throw signInError;
-
-        if (signInData?.user) {
-          // Now create the clinician profile
-          const { error: profileError } = await supabase
-            .from("clinicians")
-            .insert([
-              {
-                user_id: signInData.user.id,
-                first_name: registerData.firstName,
-                last_name: registerData.lastName,
-                specialization: registerData.specialization,
-              },
-            ]);
-
-          if (profileError) {
-            console.error("Profile creation error:", profileError);
-            throw new Error("Failed to create clinician profile. Please try again.");
-          }
-
-          // Fetch the created profile
-          const { data: profile, error: fetchError } = await supabase
-            .from("clinicians")
-            .select("*")
-            .eq("user_id", signInData.user.id)
-            .single();
-
-          if (fetchError) {
-            console.error("Profile fetch error:", fetchError);
-            throw new Error("Failed to fetch clinician profile. Please try logging in.");
-          }
-
-          localStorage.setItem("clinician", JSON.stringify(profile));
-          navigate("/clinician/dashboard");
-        }
-      }
+      navigate("/clinician/dashboard");
     } catch (error) {
-      console.error("Registration error:", error);
       setError(error.message);
     } finally {
       setLoading(false);

@@ -17,6 +17,7 @@ import ClinicianLogin from "./pages/ClinicianLogin";
 import ClinicianDashboard from "./pages/ClinicianDashboard";
 import Questionnaire from "./pages/Questonairre";
 import CriticalActionPlan from "./pages/CriticalActionPlan";
+import PatientAuth from "./pages/PatientAuth";
 
 // Components
 import Navbar from "./components/Navbar";
@@ -34,6 +35,7 @@ function App() {
           <Routes>
             {/* User Routes */}
             <Route path="/" element={<LandingPage />} />
+            <Route path="/patient-auth" element={<PatientAuth />} />
             <Route path="/mood-tracker" element={<MoodTracker />} />
             <Route path="/meditation" element={<Meditation />} />
             <Route path="/journal" element={<Journal />} />

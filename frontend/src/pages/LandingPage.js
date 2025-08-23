@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Box, Typography, Button } from "@mui/material";
+import { Container, Box, Typography, Button, Grid } from "@mui/material";
 import { Link } from "react-router-dom";
 
 function LandingPage() {
@@ -52,17 +52,40 @@ function LandingPage() {
         <Typography variant="h4" color="secondary">
           Your personal mental health companion
         </Typography>
-        <Box mt={4}>
-          <Button
-            component={Link}
-            to="/mood-tracker"
-            variant="contained"
-            color="primary"
-            size="large"
-          >
-            Get Started
-          </Button>
+        
+        {/* Portal Navigation Buttons */}
+        <Box mt={4} mb={4}>
+          <Grid container spacing={3} justifyContent="center">
+            <Grid item>
+              <Button
+                component={Link}
+                to="/patient-auth"
+                variant="contained"
+                color="primary"
+                size="large"
+                sx={{ minWidth: 200 }}
+              >
+                Patient Portal
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button
+                component={Link}
+                to="/clinician/login"
+                variant="outlined"
+                color="primary"
+                size="large"
+                sx={{ minWidth: 200 }}
+              >
+                Clinician Portal
+              </Button>
+            </Grid>
+          </Grid>
         </Box>
+
+        <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 600, mx: 'auto' }}>
+          Choose your portal to access personalized mental health tools and professional insights.
+        </Typography>
       </Box>
 
       {/* Feature Cards */}

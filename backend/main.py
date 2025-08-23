@@ -6,13 +6,21 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 import google.generativeai as genai
 
+# Import our new modules
+from database import create_tables
+from routes import auth, patients, clinicians, chatbot
+
 # Load .env for GEMINI_API_KEY
 load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 genai.configure(api_key=GOOGLE_API_KEY)
 
-app = FastAPI()
+app = FastAPI(
+    title="Mental Health App API",
+    description="Backend API for Mental Health Application",
+    version="1.0.0"
+)
 
 # Allow CORS for localhost:3000
 app.add_middleware(
@@ -22,6 +30,26 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include all our API routes
+app.include_router(auth.router)
+app.include_router(patients.router)
+app.include_router(clinicians.router)
+app.include_router(chatbot.router)
+
+# Startup event to create database tables
+@app.on_event("startup")
+async def startup_event():
+    create_tables()
+    print("✅ Database tables created successfully")
+
+@app.get("/")
+async def root():
+    return {"message": "Mental Health App API is running!"}
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "message": "API is operational"}
 
 @app.websocket("/ws/webclient")
 async def websocket_endpoint(websocket: WebSocket):

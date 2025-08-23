@@ -1,9 +1,10 @@
-flask
-flask-cors
-git+https://github.com/supabase/supabase-py
 fastapi>=0.100.0
 uvicorn[standard]>=0.23.0
 python-dotenv>=1.0.0
 websockets>=11.0.3
 google-generativeai
+sqlalchemy>=2.0.0
+python-multipart
+passlib[bcrypt]
+python-jose[cryptography]
 
