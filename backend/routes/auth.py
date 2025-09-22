@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer
 from sqlalchemy.orm import Session
 from datetime import timedelta
+from pydantic import BaseModel
 from database import get_db
 from models import User, Patient, Clinician
 from schemas import UserCreate, UserLogin, Token, PatientCreate, ClinicianCreate
@@ -9,12 +10,24 @@ from auth import get_password_hash, verify_password, create_access_token, ACCESS
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 
+# Create nested request schemas to match frontend
+class PatientRegistrationRequest(BaseModel):
+    user_data: UserCreate
+    patient_data: PatientCreate
+
+class ClinicianRegistrationRequest(BaseModel):
+    user_data: UserCreate
+    clinician_data: ClinicianCreate
+
 @router.post("/register/patient", response_model=Token)
 async def register_patient(
-    user_data: UserCreate,
-    patient_data: PatientCreate,
+    request: PatientRegistrationRequest,
     db: Session = Depends(get_db)
 ):
+    # Extract data from nested request
+    user_data = request.user_data
+    patient_data = request.patient_data
+    
     # Check if user already exists
     existing_user = db.query(User).filter(User.email == user_data.email).first()
     if existing_user:
@@ -58,10 +71,13 @@ async def register_patient(
 
 @router.post("/register/clinician", response_model=Token)
 async def register_clinician(
-    user_data: UserCreate,
-    clinician_data: ClinicianCreate,
+    request: ClinicianRegistrationRequest,
     db: Session = Depends(get_db)
 ):
+    # Extract data from nested request
+    user_data = request.user_data
+    clinician_data = request.clinician_data
+    
     # Check if user already exists
     existing_user = db.query(User).filter(User.email == user_data.email).first()
     if existing_user:

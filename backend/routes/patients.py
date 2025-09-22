@@ -138,10 +138,11 @@ async def get_patient_profile(
 
 @router.put("/consent")
 async def update_chatbot_consent(
-    consent: bool,
+    consent_data: dict,
     current_patient: Patient = Depends(get_current_patient),
     db: Session = Depends(get_db)
 ):
+    consent = consent_data.get("consent", False)
     current_patient.consent_share_chatbot = consent
     db.commit()
     return {"message": "Consent updated successfully"}
